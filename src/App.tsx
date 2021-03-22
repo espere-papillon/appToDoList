@@ -48,23 +48,37 @@ function App() {
 
 
         function getTasksForTodoList () {
-        switch (todoListFilter) {
-            case "active":
-                return tasks.filter(t => t.isDone === false)
-            case "completed":
-                return tasks.filter(t => t.isDone === true)
-            default:
-                return tasks
+            switch (todoListFilter) {
+                case "active":
+                    return tasks.filter(t => t.isDone === false)
+                case "completed":
+                    return tasks.filter(t => t.isDone === true)
+                default:
+                    return tasks
+            }
         }
-    }
+
+        function changeTaskStatus(taskId: string, newIsDone: boolean) {
+            const updatedTasks = tasks.map(el => {
+                if(el.id === taskId) {
+                    return {...el, isDone: newIsDone}
+                }
+                return el
+            })
+            setTasks(updatedTasks)
+        }
+
     // UI:
     return (
         <div className="App">
             <ToDoList title = {'What to learn'}
                       tasks={getTasksForTodoList()}
+                      todoListFilter={todoListFilter}
                       addTask={addTask}
                       removeTasks={removeTasks}
-                      changeTodoListFilter={changeTodoListFilter}/>
+                      changeTodoListFilter={changeTodoListFilter}
+                      changeTaskStatus={changeTaskStatus}
+            />
         </div>
     );
 }
