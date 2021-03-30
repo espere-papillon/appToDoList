@@ -1,29 +1,33 @@
 .App {
-  padding: 30px;
-  display: flex;
+    padding: 30px;
+    display: flex;
 }
 
 .App > div {
-  margin-right: 50px;
+    margin-right: 50px;
 }
 
 .active-filter {
-  background-color: mediumpurple;
+    background-color: mediumpurple;
 }
 
 .close-button {
-  background-color: hotpink;
+    background-color: hotpink;
 }
 
 .add-button {
-  background-color: darksalmon;
+    background-color: darksalmon;
 }
 
 .error-input {
-  border: darkred 2px solid;
-  outline: transparent;
+    border: darkred 2px solid;
+    outline: transparent;
 }
 
 .error-message {
-  color: darkred;
+    color: darkred;
+}
+
+.is-done {
+    opacity: 0.5;
 }

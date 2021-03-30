@@ -2,23 +2,25 @@ import React, {KeyboardEvent, ChangeEvent, useState} from "react";
 import {FilterValuesTypes, TaskType} from "./App";
 
 type ToDoListPropsType = {
+    id: string
     title: string
     todoListFilter: FilterValuesTypes
     tasks: Array<TaskType>
-    addTask: (title: string) => void
-    removeTasks: (taskID: string) => void
-    changeTodoListFilter: (newFilterValue: FilterValuesTypes) => void
-    changeTaskStatus: (taskId: string, newIsDone: boolean) => void
+    addTask: (title: string, todoListID: string) => void
+    removeTasks: (taskID: string, todoListID: string) => void
+    changeTodoListFilter: (newFilterValue: FilterValuesTypes, todoListID: string) => void
+    changeTaskStatus: (taskId: string, newIsDone: boolean, todoListID: string) => void
+    removeTodoList: (todoListID: string) => void
 }
 
 export function ToDoList(props: ToDoListPropsType) {
     const [title, setTitle] = useState<string>("")
     const [error, serError] = useState<string | null>(null)
     const tasks = props.tasks.map(task => {
-        const removeTask = () => props.removeTasks(task.id)
-        const changeStatus = (event: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, event.currentTarget.checked)
+        const removeTask = () => props.removeTasks(task.id, props.id)
+        const changeStatus = (event: ChangeEvent<HTMLInputElement>) => props.changeTaskStatus(task.id, event.currentTarget.checked, props.id)
         return (
-            <li>
+            <li key={task.id} className={task.isDone ? "is-done" : ""}>
                 <input type="checkbox" checked={task.isDone}
                        onChange={changeStatus}/>
                 <span>{task.title}</span>
@@ -27,15 +29,17 @@ export function ToDoList(props: ToDoListPropsType) {
         )
     })
 
-    const setAll = () => props.changeTodoListFilter("all")
-    const setActive = () => props.changeTodoListFilter("active")
-    const setCompleted = () => props.changeTodoListFilter("completed")
-    const changeTitle = (e: ChangeEvent<HTMLInputElement>) => {serError(null)
-        setTitle(e.currentTarget.value)}
+    const setAll = () => props.changeTodoListFilter("all", props.id)
+    const setActive = () => props.changeTodoListFilter("active", props.id)
+    const setCompleted = () => props.changeTodoListFilter("completed", props.id)
+    const changeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+        serError(null)
+        setTitle(e.currentTarget.value)
+    }
     const addTask = () => {
         const trimmedTitle = title.trim()
         if (trimmedTitle) {
-            props.addTask(title)
+            props.addTask(title, props.id)
         } else {
             serError("Title is required")
         }
@@ -49,10 +53,13 @@ export function ToDoList(props: ToDoListPropsType) {
     const allBtnClass = props.todoListFilter === "all" ? "active-filter" : "";
     const activeBtnClass = props.todoListFilter === "active" ? "active-filter" : "";
     const completedBtnClass = props.todoListFilter === "completed" ? "active-filter" : ""
+    const removeTodoList = () => props.removeTodoList(props.id)
 
     return (
         <div>
-            <h3>{props.title}</h3>
+            <h3>{props.title}
+                <button onClick={removeTodoList}>X</button>
+            </h3>
             <div>
                 <input
                     className={error ? "error-input" : ""}
@@ -67,9 +74,6 @@ export function ToDoList(props: ToDoListPropsType) {
                 {tasks}
             </ul>
             <div>
-                {/*<button onClick={() => {props.changeTodoListFilter("all")}}>All</button>*/}
-                {/*<button onClick={() => {props.changeTodoListFilter("active")}}>Active</button>*/}
-                {/*<button onClick={() => {props.changeTodoListFilter("completed")}}>Completed</button>*/}
                 <button className={allBtnClass} onClick={setAll}>All</button>
                 <button className={activeBtnClass} onClick={setActive}>Active</button>
                 <button className={completedBtnClass} onClick={setCompleted}>Completed</button>
