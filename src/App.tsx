@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import './App.css';
 import {ToDoList} from "./ToDoList";
 import {v1} from "uuid";
+import {AddItemForm} from "./AddItemForm";
+import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
+import {Menu} from "@material-ui/icons";
 
 export type TaskType = {
     id: string
@@ -91,33 +94,80 @@ function App() {
         setTasks({...tasks, [todoListID]: updatedTasks})
     }
 
+    function changeTaskTitle(taskId: string, title: string, todoListID: string) {
+        const updatedTasks = tasks[todoListID].map(el => {
+            if (el.id === taskId) {
+                return {...el, title}
+            }
+            return el
+        })
+        setTasks({...tasks, [todoListID]: updatedTasks})
+    }
+
     function removeTodoList(todoListID: string) {
         const updatedTodoLists = todoLists.filter(tl => tl.id !== todoListID)
         setTodoLists(updatedTodoLists)
         delete tasks[todoListID]
     }
 
+    function AddTodoList(title: string) {
+        const newTodoListID = v1()
+        const neTodoList: TodoListType = {
+            id: newTodoListID, title, filter: "all"
+        }
+        setTodoLists([...todoLists, neTodoList])
+        setTasks({...tasks, [newTodoListID]: []})
+    }
+
+    function changeTodoListTitle(title: string, todoListID: string) {
+        const updatedTodoLists = todoLists.map(tl => tl.id === todoListID ? {...tl, title} : tl)
+        setTodoLists(updatedTodoLists)
+    }
+
     // UI:
+    const todoListComponents = todoLists.map(tl => {
+        return (
+            <Grid item key={tl.id}>
+                <Paper elevation={4} style={{padding: "20px"}}>
+                    <ToDoList
+                        id={tl.id}
+                        title={tl.title}
+                        tasks={getTasksForTodoList(tl)}
+                        todoListFilter={tl.filter}
+                        addTask={addTask}
+                        removeTasks={removeTasks}
+                        changeTodoListFilter={changeTodoListFilter}
+                        changeTaskStatus={changeTaskStatus}
+                        removeTodoList={removeTodoList}
+                        changeTaskTitle={changeTaskTitle}
+                        changeTodoListTitle={changeTodoListTitle}
+                    />
+                </Paper>
+            </Grid>
+        )
+    })
+
     return (
         <div className="App">
-            {
-                todoLists.map(tl => {
-                    return (
-                        <ToDoList
-                            key={tl.id}
-                            id={tl.id}
-                            title={tl.title}
-                            tasks={getTasksForTodoList(tl)}
-                            todoListFilter={tl.filter}
-                            addTask={addTask}
-                            removeTasks={removeTasks}
-                            changeTodoListFilter={changeTodoListFilter}
-                            changeTaskStatus={changeTaskStatus}
-                            removeTodoList={removeTodoList}
-                        />
-                    )
-                })
-            }
+            <AppBar position="static">
+                <Toolbar style={{justifyContent: "space-between"}}>
+                    <IconButton edge="start" color="inherit" aria-label="menu">
+                        <Menu/>
+                    </IconButton>
+                    <Typography variant="h6">
+                        TodoList
+                    </Typography>
+                    <Button variant={"outlined"} color="inherit">Login</Button>
+                </Toolbar>
+            </AppBar>
+            <Container fixed>
+                <Grid container style={{padding: "20px 0px"}}>
+                    <AddItemForm addItem={AddTodoList}/>
+                </Grid>
+                <Grid container={true} spacing={4}>
+                    {todoListComponents}
+                </Grid>
+            </Container>
         </div>
     );
 }
