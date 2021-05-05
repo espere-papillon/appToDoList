@@ -1,0 +1,33 @@
+/*.App {*/
+/*    padding: 30px;*/
+/*    display: flex;*/
+/*}*/
+
+/*.App > div {*/
+/*    margin-right: 50px;*/
+/*}*/
+
+/*.active-filter {*/
+/*    background-color: mediumpurple;*/
+/*}*/
+
+/*.close-button {*/
+/*    background-color: hotpink;*/
+/*}*/
+
+/*.add-button {*/
+/*    background-color: darksalmon;*/
+/*}*/
+
+/*.error-input {*/
+/*    border: darkred 2px solid;*/
+/*    outline: transparent;*/
+/*}*/
+
+/*.error-message {*/
+/*    color: red;*/
+/*}*/
+
+.is-done {
+    opacity: 0.5;
+}
