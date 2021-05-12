@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import './App.css';
 import {ToDoList} from "./ToDoList";
 import {v1} from "uuid";
@@ -105,14 +105,14 @@ function App() {
         setTodoLists(updatedTodoLists)
         delete tasks[todoListID]
     }
-    function AddTodoList(title: string) {
+    const AddTodoList = useCallback((title: string) => {
         const newTodoListID = v1()
         const neTodoList: TodoListType = {
             id: newTodoListID, title, filter: "all"
         }
         setTodoLists([...todoLists, neTodoList])
         setTasks({...tasks, [newTodoListID]: []})
-    }
+    }, [])
     function changeTodoListTitle(title: string, todoListID: string) {
         const updatedTodoLists = todoLists.map(tl => tl.id === todoListID ? {...tl, title} : tl)
         setTodoLists(updatedTodoLists)
