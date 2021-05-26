@@ -4,14 +4,14 @@ import {EditableSpan} from "./EditableSpan";
 import {Delete} from "@material-ui/icons";
 import {TaskType} from "./App";
 
-type TaskSpanPropsType = {
+export type TaskPropsType = {
     task: TaskType
     removeTasks: (taskId: string) => void
     changeTaskTitle: (taskId: string, title: string) => void
     changeTaskStatus: (taskId: string, isDone: boolean) => void
 }
 
-export const Task = React.memo(({task, changeTaskTitle, changeTaskStatus, removeTasks}: TaskSpanPropsType) => {
+export const Task = React.memo(({task, changeTaskTitle, changeTaskStatus, removeTasks}: TaskPropsType) => {
     console.log('Task called')
 
     const removeTask = () => removeTasks(task.id)
