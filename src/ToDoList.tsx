@@ -1,10 +1,13 @@
-import React, {ChangeEvent, useCallback} from "react";
-import {FilterValuesTypes, TaskType} from "./App";
+import React, {ChangeEvent, useCallback, useEffect} from "react";
+import {FilterValuesTypes} from "./AppWithRedux";
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
 import {Button, Checkbox, IconButton, List, ListItem} from "@material-ui/core";
 import {Delete} from "@material-ui/icons";
 import {Task} from "./Task";
+import {TaskStatuses, TaskType} from "./api/api";
+import {useDispatch} from "react-redux";
+import {fetchTasksTC} from "./state/tasks-reducer";
 
 type ToDoListPropsType = {
     id: string
@@ -24,6 +27,12 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const removeTask = useCallback((taskId: string) => props.removeTasks(taskId, props.id), [props.removeTasks, , props.id])
     const changeStatus = useCallback((taskId: string, newIsDone: boolean) => props.changeTaskStatus(taskId, newIsDone, props.id), [props.changeTaskStatus, props.id])
     const changeTaskTitle = useCallback((taskId: string, newTitle: string) => props.changeTaskTitle(taskId, newTitle, props.id), [props.changeTaskTitle, props.id])
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(fetchTasksTC(props.id))
+    }, [])
 
     const tasks = getTasksForTodoList().map(task => <Task
         key={task.id}
@@ -51,9 +60,9 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     function getTasksForTodoList(): Array<TaskType> {
         switch (props.todoListFilter) {
             case "active":
-                return props.tasks.filter(t => t.isDone === false)
+                return props.tasks.filter(t => t.status === TaskStatuses.New)
             case "completed":
-                return props.tasks.filter(t => t.isDone === true)
+                return props.tasks.filter(t => t.status === TaskStatuses.Completed)
             default:
                 return props.tasks
         }

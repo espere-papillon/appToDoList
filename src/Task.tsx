@@ -2,7 +2,7 @@ import React, {ChangeEvent, useCallback} from "react";
 import {Checkbox, IconButton, ListItem} from "@material-ui/core";
 import {EditableSpan} from "./EditableSpan";
 import {Delete} from "@material-ui/icons";
-import {TaskType} from "./App";
+import {TaskStatuses, TaskType} from "./api/api";
 
 export type TaskPropsType = {
     task: TaskType
@@ -19,8 +19,8 @@ export const Task = React.memo(({task, changeTaskTitle, changeTaskStatus, remove
     const changeTitle = (title: string) => changeTaskTitle(task.id, title)
 
     return (
-        <ListItem key={task.id} className={task.isDone ? "is-done" : ""}>
-            <Checkbox color={"primary"} checked={task.isDone} onChange={changeStatus} />
+        <ListItem key={task.id} className={task.status === TaskStatuses.Completed ? "is-done" : ""}>
+            <Checkbox color={"primary"} checked={task.status === TaskStatuses.Completed} onChange={changeStatus} />
             <EditableSpan title={task.title} changeTitle={changeTitle}/>
             <IconButton onClick={removeTask}>
                 <Delete/>
