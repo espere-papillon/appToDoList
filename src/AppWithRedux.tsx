@@ -10,12 +10,10 @@ import {
     ChangeTodolistTitleAC, fetchTodosThunk, RemoveTodoListAC
 } from "./state/todolists-reducer";
 import {
-    addTaskAC,
     addTaskTC,
     changeTaskStatusAC,
     changeTaskTitleAC,
-    fetchTasksTC,
-    removeTaskAC
+    removeTaskTC, TaskStatuses, updateTaskStatusTC, updateTaskTitleTC
 } from "./state/tasks-reducer";
 import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "./state/store";
@@ -54,8 +52,8 @@ function AppWithRedux() {
 
 
     const removeTasks = useCallback((taskID: string, todoListID: string) => {
-        dispatch(removeTaskAC(taskID, todoListID))
-    }, [dispatch])
+        dispatch(removeTaskTC(taskID,todoListID))
+    }, [])
     // const addTask = useCallback((title: string, todoListID: string) => {
     //     dispatch(addTaskAC(title, todoListID))
     // }, [dispatch])
@@ -63,11 +61,11 @@ function AppWithRedux() {
         const thunk = addTaskTC(title, todolistId)
         dispatch(thunk);
     }, []);
-    const changeTaskStatus = useCallback((taskId: string, newIsDone: boolean, todoListID: string) => {
-        dispatch(changeTaskStatusAC(taskId, newIsDone, todoListID))
-    }, [dispatch])
+    const changeTaskStatus = useCallback((taskId: string, status: TaskStatuses, todoListID: string) => {
+        dispatch(updateTaskStatusTC(taskId, status, todoListID))
+    }, [])
     const changeTaskTitle = useCallback((taskId: string, title: string, todoListID: string) => {
-        dispatch(changeTaskTitleAC(taskId, title, todoListID))
+        dispatch(updateTaskTitleTC(taskId, title, todoListID))
     }, [dispatch])
 
     const changeTodoListFilter = useCallback((newFilter: FilterValuesTypes, todoListID: string) => {
@@ -120,7 +118,7 @@ function AppWithRedux() {
                 </Toolbar>
             </AppBar>
             <Container fixed>
-                <Grid container style={{padding: "20px 0px"}}>
+                <Grid container style={{padding: "20px 0"}}>
                     <AddItemForm addItem={AddTodoList}/>
                 </Grid>
                 <Grid container={true} spacing={4}>
