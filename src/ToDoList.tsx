@@ -17,7 +17,7 @@ type ToDoListPropsType = {
     addTask: (title: string, todoListID: string) => void
     removeTasks: (taskID: string, todoListID: string) => void
     changeTodoListFilter: (newFilterValue: FilterValuesTypes, todoListID: string) => void
-    changeTaskStatus: (taskId: string, newIsDone: boolean, todoListID: string) => void
+    changeTaskStatus: (taskId: string, status: TaskStatuses, todoListID: string) => void
     removeTodoList: (todoListID: string) => void
     changeTaskTitle: (taskId: string, title: string, todoListID: string) => void
     changeTodoListTitle: (title: string, todoListID: string) => void
@@ -25,7 +25,7 @@ type ToDoListPropsType = {
 
 export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const removeTask = useCallback((taskId: string) => props.removeTasks(taskId, props.id), [props.removeTasks, , props.id])
-    const changeStatus = useCallback((taskId: string, newIsDone: boolean) => props.changeTaskStatus(taskId, newIsDone, props.id), [props.changeTaskStatus, props.id])
+    const changeStatus = useCallback((taskId: string, status: TaskStatuses) => props.changeTaskStatus(taskId, status, props.id), [props.changeTaskStatus, props.id])
     const changeTaskTitle = useCallback((taskId: string, newTitle: string) => props.changeTaskTitle(taskId, newTitle, props.id), [props.changeTaskTitle, props.id])
 
     const dispatch = useDispatch()
