@@ -2,12 +2,20 @@ import React, {useCallback, useEffect} from 'react';
 import './App.css';
 import {ToDoList} from "./ToDoList";
 import {AddItemForm} from "./AddItemForm";
-import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
-import {Menu} from "@material-ui/icons";
 import {
-    AddTodolistAC, addTodolistTC,
-    ChangeTodoListFilterAC,
-    ChangeTodolistTitleAC, fetchTodosThunk, RemoveTodoListAC, removeTodolistTC, updateTodolistTitleTC
+    AppBar,
+    Button,
+    Container,
+    Grid,
+    IconButton,
+    LinearProgress,
+    Paper,
+    Toolbar,
+    Typography
+} from "@material-ui/core";
+import {Menu} from "@material-ui/icons";
+import {addTodolistTC,
+    ChangeTodoListFilterAC, fetchTodosThunk, removeTodolistTC, updateTodolistTitleTC
 } from "./state/todolists-reducer";
 import {
     addTaskTC,
@@ -16,12 +24,7 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "./state/store";
 import {TaskType} from "./api/api";
-
-// export type TaskType = {
-//     id: string
-//     title: string
-//     isDone: boolean
-// }
+import {RequestStatusType} from "./state/app-reducer";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -37,16 +40,14 @@ export type TasksStateType = {
 function AppWithRedux() {
     // BLL:
     let todoLists = useSelector<AppRootStateType, Array<TodoListType>>(state => state.todolists)
-
     let tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
+    let status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
 
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(fetchTodosThunk)
     }, [])
-
-
 
 
     const removeTasks = useCallback((taskID: string, todoListID: string) => {
@@ -115,6 +116,7 @@ function AppWithRedux() {
                     <Button variant={"outlined"} color="inherit">Login</Button>
                 </Toolbar>
             </AppBar>
+            {status === 'loading' && <LinearProgress color="secondary"/>}
             <Container fixed>
                 <Grid container style={{padding: "20px 0"}}>
                     <AddItemForm addItem={AddTodoList}/>
