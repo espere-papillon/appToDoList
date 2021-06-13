@@ -4,16 +4,9 @@ import {todolistsAPI, TodolistType} from "../api/api";
 import {Dispatch} from "redux";
 import {AppRootStateType} from "./store";
 
-export type RemoveTodoListAT = {
-    type: "REMOVE-TODOLIST"
-    todoListID: string
-}
+export type RemoveTodoListAT = ReturnType<typeof RemoveTodoListAC>
 
-export type AddTodoListAT = {
-    type: "ADD-TODOLIST"
-    title: string,
-    id: string,
-}
+export type AddTodoListAT = ReturnType<typeof AddTodolistAC>
 
 type ChangeTodoListTitleAT = {
     type: "CHANGE-TODOLIST-TITLE"
@@ -42,13 +35,7 @@ export  const todoListsReducer = (state = initialState, action: ActionType): Arr
         case "REMOVE-TODOLIST":
             return state.filter(tl => tl.id !== action.todoListID)
         case "ADD-TODOLIST":
-            return [{
-                id: action.id,
-                title: action.title,
-                filter: 'all',
-                addedDate: '',
-                order: 0
-            }, ...state]
+            return [{...action.todilist, filter: "all"}, ...state]
         case "CHANGE-TODOLIST-TITLE":
             return state.map(tl => tl.id === action.todoListID ? {...tl, title: action.title} : tl)
         case "CHANGE-TODOLIST-FILTER":
@@ -63,12 +50,12 @@ export  const todoListsReducer = (state = initialState, action: ActionType): Arr
     }
 }
 
-export const RemoveTodoListAC = (id: string): RemoveTodoListAT => {
-    return {type: "REMOVE-TODOLIST", todoListID: id}
+export const RemoveTodoListAC = (id: string) => {
+    return {type: "REMOVE-TODOLIST", todoListID: id} as const
 }
 
-export const AddTodolistAC = (title: string): AddTodoListAT => {
-    return {type: "ADD-TODOLIST", title, id: v1()}
+export const AddTodolistAC = (todilist: TodolistType) => {
+    return {type: "ADD-TODOLIST", todilist} as const
 }
 
 export const ChangeTodolistTitleAC = (title: string, todoListID: string): ChangeTodoListTitleAT => {
@@ -88,5 +75,17 @@ export type SetTodosAT = ReturnType<typeof setTodosAC>
 export const fetchTodosThunk = (dispatch: Dispatch, getState: () => AppRootStateType) => {
     todolistsAPI.getTodolists().then(res => {
         dispatch(setTodosAC(res.data))
+    })
+}
+
+export const addTodolistTC = (title: string) => (dispatch: Dispatch) => {
+    todolistsAPI.createTodolist(title).then(res =>{
+        dispatch(AddTodolistAC(res.data.data.item))
+    })
+}
+
+export const removeTodolistTC = (id: string) => (dispatch: Dispatch) => {
+    todolistsAPI.deleteTodolist(id).then(res => {
+        dispatch(RemoveTodoListAC(id))
     })
 }

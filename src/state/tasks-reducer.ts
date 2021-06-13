@@ -72,7 +72,7 @@ export  const tasksReducer = (state = initialState, action: ActionType): TasksSt
             return {...state, [action.todolistID]: updateTasks}
         }
         case "ADD-TODOLIST": {
-            return {...state, [action.id]: []}
+            return {...state, [action.todilist.id]: []}
         }
         case "REMOVE-TODOLIST": {
             let copyState = {...state}
@@ -130,7 +130,6 @@ export const fetchTasksTC = (todolistId: string) => {
 export const addTaskTC = (title: string, todolistId: string) => (dispatch: Dispatch) => {
     todolistsAPI.createTask(todolistId, title)
         .then(res => {
-            debugger
             const action = addTaskAC(res.data.data.item)
             dispatch(action)
         })
