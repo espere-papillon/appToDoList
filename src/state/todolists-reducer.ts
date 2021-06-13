@@ -1,5 +1,4 @@
-import {FilterValuesTypes, TodoListType} from "../AppWithRedux";
-import {v1} from "uuid";
+import {FilterValuesTypes} from "../AppWithRedux";
 import {todolistsAPI, TodolistType} from "../api/api";
 import {Dispatch} from "redux";
 import {AppRootStateType} from "./store";
@@ -8,11 +7,7 @@ export type RemoveTodoListAT = ReturnType<typeof RemoveTodoListAC>
 
 export type AddTodoListAT = ReturnType<typeof AddTodolistAC>
 
-type ChangeTodoListTitleAT = {
-    type: "CHANGE-TODOLIST-TITLE"
-    title: string
-    todoListID: string
-}
+type ChangeTodoListTitleAT = ReturnType<typeof ChangeTodolistTitleAC>
 
 type ChangeTodoListFilterAT = {
     type: "CHANGE-TODOLIST-FILTER"
@@ -58,8 +53,8 @@ export const AddTodolistAC = (todilist: TodolistType) => {
     return {type: "ADD-TODOLIST", todilist} as const
 }
 
-export const ChangeTodolistTitleAC = (title: string, todoListID: string): ChangeTodoListTitleAT => {
-    return { type: "CHANGE-TODOLIST-TITLE", title, todoListID}
+export const ChangeTodolistTitleAC = (title: string, todoListID: string) => {
+    return { type: "CHANGE-TODOLIST-TITLE", title, todoListID} as const
 }
 
 export const ChangeTodoListFilterAC = (newFilter: FilterValuesTypes, todoListID: string): ChangeTodoListFilterAT => {
@@ -88,4 +83,14 @@ export const removeTodolistTC = (id: string) => (dispatch: Dispatch) => {
     todolistsAPI.deleteTodolist(id).then(res => {
         dispatch(RemoveTodoListAC(id))
     })
+}
+
+export const updateTodolistTitleTC = (id: string, title: string) => {
+    return (dispatch: Dispatch, getState: () => AppRootStateType) => {
+        todolistsAPI.updateTodolist(id, title)
+                .then((res) => {
+                    const action = ChangeTodolistTitleAC(title, id)
+                    dispatch(action)
+                })
+        }
 }
