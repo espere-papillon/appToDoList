@@ -5,6 +5,8 @@ import {TaskType, todolistsAPI} from "../api/api";
 import {TasksStateType} from "../AppWithRedux";
 import {AppRootStateType} from "./store";
 import {setAppStatusAC} from "./app-reducer";
+import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
+import { AxiosError } from "axios";
 
 type RemoveTaskActionType = {
     type: "REMOVE_TASK",
@@ -132,8 +134,15 @@ export const addTaskTC = (title: string, todolistId: string) => (dispatch: Dispa
     dispatch(setAppStatusAC('loading'))
     todolistsAPI.createTask(todolistId, title)
         .then(res => {
-            dispatch(addTaskAC(res.data.data.item))
-            dispatch(setAppStatusAC('succeeded'))
+            if (res.data.resultCode === 0) {
+                dispatch(addTaskAC(res.data.data.item))
+                dispatch(setAppStatusAC('succeeded'))
+            } else {
+                handleServerAppError(dispatch, res.data)
+            }
+        })
+        .catch((err: AxiosError) => {
+            handleServerNetworkError(dispatch, err.message)
         })
 }
 

@@ -25,6 +25,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "./state/store";
 import {TaskType} from "./api/api";
 import {RequestStatusType} from "./state/app-reducer";
+import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -105,6 +106,7 @@ function AppWithRedux() {
 
     return (
         <div className="App">
+            <ErrorSnackbar />
             <AppBar position="static">
                 <Toolbar style={{justifyContent: "space-between"}}>
                     <IconButton edge="start" color="inherit" aria-label="menu">
