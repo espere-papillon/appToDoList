@@ -8,12 +8,14 @@ import {Task} from "./Task";
 import {TaskStatuses, TaskType} from "./api/api";
 import {useDispatch} from "react-redux";
 import {fetchTasksTC} from "./state/tasks-reducer";
+import {RequestStatusType} from "./state/app-reducer";
 
 type ToDoListPropsType = {
     id: string
     title: string
     todoListFilter: FilterValuesTypes
     tasks: Array<TaskType>
+    entityStatus: RequestStatusType
     addTask: (title: string, todoListID: string) => void
     removeTasks: (taskID: string, todoListID: string) => void
     changeTodoListFilter: (newFilterValue: FilterValuesTypes, todoListID: string) => void
