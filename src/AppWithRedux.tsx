@@ -14,8 +14,9 @@ import {
     Typography
 } from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
-import {addTodolistTC,
-    ChangeTodoListFilterAC, fetchTodosThunk, removeTodolistTC, updateTodolistTitleTC
+import {
+    addTodolistTC,
+    ChangeTodoListFilterAC, fetchTodosThunk, removeTodolistTC, TodolistDomainType, updateTodolistTitleTC
 } from "./state/todolists-reducer";
 import {
     addTaskTC,
@@ -40,7 +41,7 @@ export type TasksStateType = {
 
 function AppWithRedux() {
     // BLL:
-    let todoLists = useSelector<AppRootStateType, Array<TodoListType>>(state => state.todolists)
+    let todoLists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     let tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
     let status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
 
@@ -91,6 +92,7 @@ function AppWithRedux() {
                         title={tl.title}
                         tasks={tasks[tl.id]}
                         todoListFilter={tl.filter}
+                        entityStatus={tl.entityStatus}
                         addTask={addTask}
                         removeTasks={removeTasks}
                         changeTodoListFilter={changeTodoListFilter}
