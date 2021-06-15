@@ -123,7 +123,7 @@ function AppWithRedux() {
             {status === 'loading' && <LinearProgress color="secondary"/>}
             <Container fixed>
                 <Grid container style={{padding: "20px 0"}}>
-                    <AddItemForm addItem={AddTodoList}/>
+                    <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
                 </Grid>
                 <Grid container={true} spacing={4}>
                     {todoListComponents}

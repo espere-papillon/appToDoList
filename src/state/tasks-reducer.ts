@@ -1,5 +1,5 @@
 import {v1} from "uuid";
-import {AddTodoListAT, RemoveTodoListAT, SetTodosAT} from "./todolists-reducer";
+import {AddTodoListAT, changeTodolistEntityStatusAC, RemoveTodoListAT, SetTodosAT} from "./todolists-reducer";
 import { Dispatch } from "redux";
 import {TaskType, todolistsAPI} from "../api/api";
 import {TasksStateType} from "../AppWithRedux";
@@ -132,19 +132,19 @@ export const fetchTasksTC = (todolistId: string) => {
 
 export const addTaskTC = (title: string, todolistId: string) => (dispatch: Dispatch) => {
     dispatch(setAppStatusAC('loading'))
+    dispatch(changeTodolistEntityStatusAC(todolistId, "loading"))
     todolistsAPI.createTask(todolistId, title)
         .then(res => {
             if (res.data.resultCode === 0) {
                 dispatch(addTaskAC(res.data.data.item))
                 dispatch(setAppStatusAC('succeeded'))
+                dispatch(changeTodolistEntityStatusAC(todolistId, "succeeded"))
             } else {
-                dispatch(setAppErrorAC(res.data.messages[0]))
-                dispatch(setAppStatusAC('succeeded'))
+                handleServerAppError(dispatch, res.data)
             }
         })
-        .catch((err: AxiosError) => {
-            dispatch(setAppErrorAC(err.message))
-            dispatch(setAppStatusAC('failed'))
+        .catch((error: AxiosError) => {
+            handleServerNetworkError(dispatch, error.message)
         })
 }
 
@@ -173,6 +173,9 @@ export const updateTaskStatusTC = (id: string, status: TaskStatuses, todolistId:
                     dispatch(changeTaskStatusAC(res.data.data.item.id, res.data.data.item.status, res.data.data.item.todoListId))
                     dispatch(setAppStatusAC('succeeded'))
                 })
+                .catch((error: AxiosError) => {
+                    handleServerNetworkError(dispatch, error.message)
+                })
         }
     }
 }
@@ -192,6 +195,9 @@ export const updateTaskTitleTC = (id: string, title: string, todolistId: string)
                 .then((res) => {
                     dispatch(changeTaskTitleAC(res.data.data.item.id, res.data.data.item.title, res.data.data.item.todoListId))
                     dispatch(setAppStatusAC('succeeded'))
+                })
+                .catch((error: AxiosError) => {
+                    handleServerNetworkError(dispatch, error.message)
                 })
         }
     }
