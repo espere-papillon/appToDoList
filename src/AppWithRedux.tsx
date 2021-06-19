@@ -4,7 +4,7 @@ import {ToDoList} from "./ToDoList";
 import {AddItemForm} from "./AddItemForm";
 import {
     AppBar,
-    Button,
+    Button, CircularProgress,
     Container,
     Grid,
     IconButton,
@@ -27,6 +27,10 @@ import {AppRootStateType} from "./state/store";
 import {TaskType} from "./api/api";
 import {RequestStatusType} from "./state/app-reducer";
 import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
+import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
+import {Login} from "./features/Login/Login";
+import {initializedAppTC, logoutTC} from "./state/auth-reducer";
+import {TodolistsList} from "./TodolistsList";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -47,13 +51,17 @@ function AppWithRedux() {
 
     const dispatch = useDispatch();
 
+    // useEffect(() => {
+    //     dispatch(fetchTodosThunk)
+    // }, [])
+
     useEffect(() => {
-        dispatch(fetchTodosThunk)
+        dispatch(initializedAppTC())
     }, [])
 
 
     const removeTasks = useCallback((taskID: string, todoListID: string) => {
-        dispatch(removeTaskTC(taskID,todoListID))
+        dispatch(removeTaskTC(taskID, todoListID))
     }, [])
     // const addTask = useCallback((title: string, todoListID: string) => {
     //     dispatch(addTaskAC(title, todoListID))
@@ -83,32 +91,42 @@ function AppWithRedux() {
     }, [])
 
     // UI:
-    const todoListComponents = todoLists.map(tl => {
-        return (
-            <Grid item key={tl.id}>
-                <Paper elevation={4} style={{padding: "20px"}}>
-                    <ToDoList
-                        id={tl.id}
-                        title={tl.title}
-                        tasks={tasks[tl.id]}
-                        todoListFilter={tl.filter}
-                        entityStatus={tl.entityStatus}
-                        addTask={addTask}
-                        removeTasks={removeTasks}
-                        changeTodoListFilter={changeTodoListFilter}
-                        changeTaskStatus={changeTaskStatus}
-                        removeTodoList={removeTodoList}
-                        changeTaskTitle={changeTaskTitle}
-                        changeTodoListTitle={changeTodoListTitle}
-                    />
-                </Paper>
-            </Grid>
-        )
-    })
+    // const todoListComponents = todoLists.map(tl => {
+    //     return (
+    //         <Grid item key={tl.id}>
+    //             <Paper elevation={4} style={{padding: "20px"}}>
+    //                 <ToDoList
+    //                     id={tl.id}
+    //                     title={tl.title}
+    //                     tasks={tasks[tl.id]}
+    //                     todoListFilter={tl.filter}
+    //                     entityStatus={tl.entityStatus}
+    //                     addTask={addTask}
+    //                     removeTasks={removeTasks}
+    //                     changeTodoListFilter={changeTodoListFilter}
+    //                     changeTaskStatus={changeTaskStatus}
+    //                     removeTodoList={removeTodoList}
+    //                     changeTaskTitle={changeTaskTitle}
+    //                     changeTodoListTitle={changeTodoListTitle}
+    //                 />
+    //             </Paper>
+    //         </Grid>
+    //     )
+    // })
+
+    const isInitialized = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+
+    if (!isInitialized) {
+        return <div
+            style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+            <CircularProgress/>
+        </div>
+    }
 
     return (
         <div className="App">
-            <ErrorSnackbar />
+            <ErrorSnackbar/>
             <AppBar position="static">
                 <Toolbar style={{justifyContent: "space-between"}}>
                     <IconButton edge="start" color="inherit" aria-label="menu">
@@ -117,17 +135,38 @@ function AppWithRedux() {
                     <Typography variant="h6">
                         TodoList
                     </Typography>
-                    <Button variant={"outlined"} color="inherit">Login</Button>
+                    {isLoggedIn && <Button variant={"outlined"} color="inherit" onClick={() => dispatch(logoutTC())}>Log out</Button>}
                 </Toolbar>
             </AppBar>
             {status === 'loading' && <LinearProgress color="secondary"/>}
             <Container fixed>
-                <Grid container style={{padding: "20px 0"}}>
-                    <AddItemForm addItem={AddTodoList}/>
-                </Grid>
-                <Grid container={true} spacing={4}>
-                    {todoListComponents}
-                </Grid>
+                <Switch>
+                    <Route exact path={'/'} render={() =>
+                        <TodolistsList
+                        todoLists={todoLists}
+                        tasks={tasks}
+                        addTask={addTask}
+                        removeTasks={removeTasks}
+                        changeTaskTitle={changeTaskTitle}
+                        changeTaskStatus={changeTaskStatus}
+                        removeTodoList={removeTodoList}
+                        AddTodoList={AddTodoList}
+                        changeTodoListTitle={changeTodoListTitle}
+                        changeTodoListFilter={changeTodoListFilter}
+                        />
+                    //     <>
+                    //     <Grid container style={{padding: "20px 0"}}>
+                    //         <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
+                    //     </Grid>
+                    //     <Grid container={true} spacing={4}>
+                    //         {todoListComponents}
+                    //     </Grid>
+                    // </>
+                    }/>
+                    <Route path={'/login'} render={() => <Login/>}/>
+                    <Route path={'/404'} render={() => <h1>404: PAGE NOT FOUND</h1>}/>
+                    <Redirect from={'*'} to={'/404'}/>
+                </Switch>
             </Container>
         </div>
     );
