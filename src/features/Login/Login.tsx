@@ -33,7 +33,7 @@ export const Login = () => {
         validate,
         onSubmit: values => {
             dispatch(loginTC(values))
-            alert(JSON.stringify(values))
+            //alert(JSON.stringify(values))
         }
     })
 

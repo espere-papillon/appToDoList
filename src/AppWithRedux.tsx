@@ -4,7 +4,7 @@ import {ToDoList} from "./ToDoList";
 import {AddItemForm} from "./AddItemForm";
 import {
     AppBar,
-    Button,
+    Button, CircularProgress,
     Container,
     Grid,
     IconButton,
@@ -29,6 +29,7 @@ import {RequestStatusType} from "./state/app-reducer";
 import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
 import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
 import {Login} from "./features/Login/Login";
+import {initializedAppTC} from "./state/auth-reducer";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -50,6 +51,7 @@ function AppWithRedux() {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        dispatch(initializedAppTC())
         dispatch(fetchTodosThunk)
     }, [])
 
@@ -107,6 +109,22 @@ function AppWithRedux() {
             </Grid>
         )
     })
+
+    const isInitialized = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+
+    if (!isInitialized) {
+        return <div
+            style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+            <CircularProgress/>
+        </div>
+    }
+
+    if (!isLoggedIn) {
+        return <>
+            <Route path={'/login'} render={() => <Login/>}/>
+            <Redirect to={'/login'}/></>
+    }
 
     return (
         <div className="App">

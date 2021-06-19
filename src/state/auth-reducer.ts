@@ -1,6 +1,6 @@
 import {authAPI, LoginDataType} from "../api/api";
 import {Dispatch} from "redux";
-import {SetAppErrorAT, setAppStatusAC, SetAppStatusAT} from "./app-reducer";
+import {SetAppErrorAT, setAppStatusAC, SetAppStatusAT, setIsInitializedAC} from "./app-reducer";
 import {handleServerAppError, handleServerNetworkError} from "../utils/error-utils";
 import {AxiosError} from "axios";
 
@@ -37,4 +37,18 @@ export const loginTC = (data: LoginDataType) => (dispatch: Dispatch<ActionType>)
         .catch((error: AxiosError) => {
             handleServerNetworkError(dispatch, error.message)
         })
+}
+
+export const initializedAppTC = () => (dispatch: Dispatch) => {
+    authAPI.me().then(res => {
+        if (res.data.resultCode === 0) {
+            dispatch(setIsLoggedInAC(true))
+        } else {
+            handleServerAppError(dispatch, res.data)
+        }
+    })
+        .finally(() => {
+                dispatch(setIsInitializedAC(true))
+            }
+        )
 }
