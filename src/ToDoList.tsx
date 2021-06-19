@@ -6,9 +6,11 @@ import {Button, Checkbox, IconButton, List, ListItem} from "@material-ui/core";
 import {Delete} from "@material-ui/icons";
 import {Task} from "./Task";
 import {TaskStatuses, TaskType} from "./api/api";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {fetchTasksTC} from "./state/tasks-reducer";
 import {RequestStatusType} from "./state/app-reducer";
+import {AppRootStateType} from "./state/store";
+import {Redirect} from "react-router-dom";
 
 type ToDoListPropsType = {
     id: string
@@ -31,8 +33,13 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
     const changeTaskTitle = useCallback((taskId: string, newTitle: string) => props.changeTaskTitle(taskId, newTitle, props.id), [props.changeTaskTitle, props.id])
 
     const dispatch = useDispatch()
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+
 
     useEffect(() => {
+        if (!isLoggedIn) {
+            return
+        }
         dispatch(fetchTasksTC(props.id))
     }, [])
 
@@ -74,12 +81,12 @@ export const ToDoList = React.memo((props: ToDoListPropsType) => {
         <div>
             <h3>
                 <EditableSpan title={props.title} changeTitle={changeTodoListTitle}/>
-                <IconButton onClick={removeTodoList}>
+                <IconButton onClick={removeTodoList} disabled={props.entityStatus === "loading"}>
                     <Delete/>
                 </IconButton>
                 {/*<button onClick={removeTodoList}>X</button>*/}
             </h3>
-            <AddItemForm addItem={addTask}/>
+            <AddItemForm addItem={addTask} entityStatus={props.entityStatus}/>
             <List>
                 {tasks}
             </List>
