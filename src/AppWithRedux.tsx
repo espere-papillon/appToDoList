@@ -27,6 +27,8 @@ import {AppRootStateType} from "./state/store";
 import {TaskType} from "./api/api";
 import {RequestStatusType} from "./state/app-reducer";
 import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
+import {Redirect, Route, Switch} from 'react-router-dom';
+import {Login} from "./features/Login/Login";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -53,7 +55,7 @@ function AppWithRedux() {
 
 
     const removeTasks = useCallback((taskID: string, todoListID: string) => {
-        dispatch(removeTaskTC(taskID,todoListID))
+        dispatch(removeTaskTC(taskID, todoListID))
     }, [])
     // const addTask = useCallback((title: string, todoListID: string) => {
     //     dispatch(addTaskAC(title, todoListID))
@@ -108,7 +110,7 @@ function AppWithRedux() {
 
     return (
         <div className="App">
-            <ErrorSnackbar />
+            <ErrorSnackbar/>
             <AppBar position="static">
                 <Toolbar style={{justifyContent: "space-between"}}>
                     <IconButton edge="start" color="inherit" aria-label="menu">
@@ -122,12 +124,19 @@ function AppWithRedux() {
             </AppBar>
             {status === 'loading' && <LinearProgress color="secondary"/>}
             <Container fixed>
-                <Grid container style={{padding: "20px 0"}}>
-                    <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
-                </Grid>
-                <Grid container={true} spacing={4}>
-                    {todoListComponents}
-                </Grid>
+                <Switch>
+                    <Route exact path={'/'} render={() => <>
+                        <Grid container style={{padding: "20px 0"}}>
+                            <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
+                        </Grid>
+                        <Grid container={true} spacing={4}>
+                            {todoListComponents}
+                        </Grid>
+                    </>}/>
+                    <Route path={'/login'} render={() => <Login/>}/>
+                    <Route path={'/404'} render={() => <h1>404: PAGE NOT FOUND</h1>}/>
+                    <Redirect from={'*'} to={'/404'}/>
+                </Switch>
             </Container>
         </div>
     );
