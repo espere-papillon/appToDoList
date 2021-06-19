@@ -52,3 +52,19 @@ export const initializedAppTC = () => (dispatch: Dispatch) => {
             }
         )
 }
+
+export const logoutTC = () => (dispatch: Dispatch) => {
+    dispatch(setAppStatusAC('loading'))
+    authAPI.logout()
+        .then(res => {
+            if (res.data.resultCode === 0) {
+                dispatch(setIsLoggedInAC(false))
+                dispatch(setAppStatusAC('succeeded'))
+            } else {
+                handleServerAppError(dispatch, res.data)
+            }
+        })
+        .catch((error) => {
+            handleServerNetworkError(dispatch, error)
+        })
+}

@@ -29,7 +29,8 @@ import {RequestStatusType} from "./state/app-reducer";
 import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
 import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
 import {Login} from "./features/Login/Login";
-import {initializedAppTC} from "./state/auth-reducer";
+import {initializedAppTC, logoutTC} from "./state/auth-reducer";
+import {TodolistsList} from "./TodolistsList";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
 export type TodoListType = {
@@ -50,9 +51,12 @@ function AppWithRedux() {
 
     const dispatch = useDispatch();
 
+    // useEffect(() => {
+    //     dispatch(fetchTodosThunk)
+    // }, [])
+
     useEffect(() => {
         dispatch(initializedAppTC())
-        dispatch(fetchTodosThunk)
     }, [])
 
 
@@ -87,28 +91,28 @@ function AppWithRedux() {
     }, [])
 
     // UI:
-    const todoListComponents = todoLists.map(tl => {
-        return (
-            <Grid item key={tl.id}>
-                <Paper elevation={4} style={{padding: "20px"}}>
-                    <ToDoList
-                        id={tl.id}
-                        title={tl.title}
-                        tasks={tasks[tl.id]}
-                        todoListFilter={tl.filter}
-                        entityStatus={tl.entityStatus}
-                        addTask={addTask}
-                        removeTasks={removeTasks}
-                        changeTodoListFilter={changeTodoListFilter}
-                        changeTaskStatus={changeTaskStatus}
-                        removeTodoList={removeTodoList}
-                        changeTaskTitle={changeTaskTitle}
-                        changeTodoListTitle={changeTodoListTitle}
-                    />
-                </Paper>
-            </Grid>
-        )
-    })
+    // const todoListComponents = todoLists.map(tl => {
+    //     return (
+    //         <Grid item key={tl.id}>
+    //             <Paper elevation={4} style={{padding: "20px"}}>
+    //                 <ToDoList
+    //                     id={tl.id}
+    //                     title={tl.title}
+    //                     tasks={tasks[tl.id]}
+    //                     todoListFilter={tl.filter}
+    //                     entityStatus={tl.entityStatus}
+    //                     addTask={addTask}
+    //                     removeTasks={removeTasks}
+    //                     changeTodoListFilter={changeTodoListFilter}
+    //                     changeTaskStatus={changeTaskStatus}
+    //                     removeTodoList={removeTodoList}
+    //                     changeTaskTitle={changeTaskTitle}
+    //                     changeTodoListTitle={changeTodoListTitle}
+    //                 />
+    //             </Paper>
+    //         </Grid>
+    //     )
+    // })
 
     const isInitialized = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
     const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
@@ -118,12 +122,6 @@ function AppWithRedux() {
             style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
             <CircularProgress/>
         </div>
-    }
-
-    if (!isLoggedIn) {
-        return <>
-            <Route path={'/login'} render={() => <Login/>}/>
-            <Redirect to={'/login'}/></>
     }
 
     return (
@@ -137,20 +135,34 @@ function AppWithRedux() {
                     <Typography variant="h6">
                         TodoList
                     </Typography>
-                    <Button variant={"outlined"} color="inherit"><NavLink to={'/login'} style={{color: "white"}}>Login</NavLink></Button>
+                    {isLoggedIn && <Button variant={"outlined"} color="inherit" onClick={() => dispatch(logoutTC())}>Log out</Button>}
                 </Toolbar>
             </AppBar>
             {status === 'loading' && <LinearProgress color="secondary"/>}
             <Container fixed>
                 <Switch>
-                    <Route exact path={'/'} render={() => <>
-                        <Grid container style={{padding: "20px 0"}}>
-                            <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
-                        </Grid>
-                        <Grid container={true} spacing={4}>
-                            {todoListComponents}
-                        </Grid>
-                    </>}/>
+                    <Route exact path={'/'} render={() =>
+                        <TodolistsList
+                        todoLists={todoLists}
+                        tasks={tasks}
+                        addTask={addTask}
+                        removeTasks={removeTasks}
+                        changeTaskTitle={changeTaskTitle}
+                        changeTaskStatus={changeTaskStatus}
+                        removeTodoList={removeTodoList}
+                        AddTodoList={AddTodoList}
+                        changeTodoListTitle={changeTodoListTitle}
+                        changeTodoListFilter={changeTodoListFilter}
+                        />
+                    //     <>
+                    //     <Grid container style={{padding: "20px 0"}}>
+                    //         <AddItemForm addItem={AddTodoList} entityStatus={"idle"}/>
+                    //     </Grid>
+                    //     <Grid container={true} spacing={4}>
+                    //         {todoListComponents}
+                    //     </Grid>
+                    // </>
+                    }/>
                     <Route path={'/login'} render={() => <Login/>}/>
                     <Route path={'/404'} render={() => <h1>404: PAGE NOT FOUND</h1>}/>
                     <Redirect from={'*'} to={'/404'}/>
