@@ -27,7 +27,7 @@ import {AppRootStateType} from "./state/store";
 import {TaskType} from "./api/api";
 import {RequestStatusType} from "./state/app-reducer";
 import {ErrorSnackbar} from "./components/ErrorSnackbar/ErrorSnackbar";
-import {Redirect, Route, Switch} from 'react-router-dom';
+import {NavLink, Redirect, Route, Switch} from 'react-router-dom';
 import {Login} from "./features/Login/Login";
 
 export type FilterValuesTypes = "all" | "active" | "completed"
@@ -119,7 +119,7 @@ function AppWithRedux() {
                     <Typography variant="h6">
                         TodoList
                     </Typography>
-                    <Button variant={"outlined"} color="inherit">Login</Button>
+                    <Button variant={"outlined"} color="inherit"><NavLink to={'/login'} style={{color: "white"}}>Login</NavLink></Button>
                 </Toolbar>
             </AppBar>
             {status === 'loading' && <LinearProgress color="secondary"/>}
