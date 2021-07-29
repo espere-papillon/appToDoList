@@ -5,13 +5,13 @@ import * as serviceWorker from './serviceWorker';
 import {Provider} from "react-redux";
 import {store} from "./state/store";
 import AppWithRedux from "./AppWithRedux";
-import { BrowserRouter } from 'react-router-dom';
+import {HashRouter} from 'react-router-dom';
 
 ReactDOM.render(
     <Provider store={store}>
-        <BrowserRouter>
+        <HashRouter basename={process.env.PUBLIC_URL}>
             <AppWithRedux/>
-        </BrowserRouter>
+        </HashRouter>
     </Provider>,
     document.getElementById('root'));
 
